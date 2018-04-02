@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title></title>
+<script type="text/javascript" src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+<script type="text/javascript">
+function init(){
+	stage = new createjs.Stage("demoCanvas");
+	createjs.Ticker.addEventListener('tick', tickHandler);
+	handleImageLoad();
+	rotateButterfly();
+}
+	
+function tickHandler(e){
+	stage.update();
+}
+	
+function handleImageLoad(){
+	butterfly = new createjs.Bitmap('images/butterfly.png');
+	// some properties
+	butterfly.scaleX = 0.2;
+	butterfly.scaleY = 0.2;
+	butterfly.x = 50;
+	butterfly.y = 50;
+	//console.log(butterfly.image.width);
+	butterfly.regX = butterfly.image.width / 2;
+	butterfly.regY = butterfly.image.height / 2;
+	stage.addChild(butterfly);
+}
+	
+function rotateButterfly(){
+	createjs.Tween.get(butterfly)
+		.wait(2000)
+		.to({x:450, y:250, rotation: 360}, 2000)
+		.to({x:10, y:10}, 2000)
+		.wait(2000)
+		.call(goneButterfly); // callback function after the animation is finished
+}
+	
+function goneButterfly(){
+	// assign sound load handler
+	createjs.Sound.on("fileload", handleSound); // call to function handleSound()
+	// register the sound
+	createjs.Sound.registerSound('audio/whosh.mp3', 'whosh') // target path + instance name
+	stage.removeChild(this);
+}
+	
+function handleSound(){
+	sound = createjs.Sound.play('whosh');
+}
+</script>
+
+<style type="text/css">
+#demoCanvas {
+	border: 1px solid gray;
+	padding: 2px;
+}
+</style>
+</head>
+
+<body onload="init();">
+<canvas id="demoCanvas" width="500" height="300"> alternate content </canvas>
+</body>
+</html>

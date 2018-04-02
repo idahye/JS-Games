@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title></title>
+<script type="text/javascript" src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+<script type="text/javascript">
+	
+	// NOTE for Dreamweaver: Does NOT work in "Real time preview", choose temporary file instead!	
+	// Best to be served from localhost ;-)
+	
+function init(){
+	stage = new createjs.Stage("demoCanvas");
+	drawCircle();
+	moveCircle();
+	createjs.Ticker.addEventListener('tick', tickHandler);
+}
+	
+function tickHandler(e){
+	stage.update();
+}
+	
+function drawCircle(){
+	circle = new createjs.Shape(); // instantiating the Shape class
+	circle.graphics.beginFill('#FFF000');
+	circle.graphics.drawCircle(0, 0, 50);
+	circle.x = 50;
+	circle.y = 50;
+	stage.addChild(circle);
+	//stage.update();
+	console.log('Circle created');
+}
+	
+function moveCircle(){
+	createjs.Tween.get(circle, {loop:true})
+		.to({x:450, y:250}, 2000);
+}
+	
+</script>
+
+<style type="text/css">
+#demoCanvas {
+	border: 1px solid gray;
+	padding: 2px;
+}
+</style>
+</head>
+
+<body onload="init();">
+<canvas id="demoCanvas" width="500" height="300"> alternate content </canvas>
+</body>
+</html>

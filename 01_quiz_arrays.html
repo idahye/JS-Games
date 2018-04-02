@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Simple Quiz (arrays)</title>
+<script type="text/javascript">
+	
+	var score = 0; // GLOBAL variable: Initial score is 0
+	
+	// "2 dimensional" array
+	var questions = [							 
+		['How many moons does Earth have?', 1],					 
+		['How many moons does Saturn have?', 31],
+		['How many moons does Venus have?', 0]	
+	];
+	
+	// loop through the array of questions and call the function askQuestion taking array members as argument
+	/*for (var i=0; i<questions.length; i++) {
+	askQuestion(questions[i]);
+	}*/
+	
+	questions.forEach(askQuestion);
+	
+	//function for asking question, passing on the array item as "question"
+	function askQuestion(question) {
+		//prompting the first array element and storing it into the variable "answer"
+  		var answer = prompt(question[0],'');
+  		//comparing array elements 0 + 1, question and answer
+		if (answer == question[1]) {
+		alert('Correct!');
+		score++;
+	} else {
+		alert('Sorry. The correct answer is ' + question[1]);
+	}
+}  
+	
+</script>
+</head>
+
+<body>
+<p>
+ <!-- Feedback message after quiz is concluded -->
+  <script type="text/javascript">
+	var message = 'You got ' + score;
+	message += ' out of ' + questions.length;
+	message += ' questions correct.';
+	document.write(message);
+	</script>
+  </p>
+
+</body>
+</html>

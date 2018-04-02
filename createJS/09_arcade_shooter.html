@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title></title>
+<script type="text/javascript" src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+<script type="text/javascript">
+	
+	// NOTE for Dreamweaver: Does NOT work in "Real time preview", choose temporary file instead!
+	
+var gun, target, w, h; // global variables
+	
+function init(){
+	stage = new createjs.Stage("demoCanvas");
+	h = demoCanvas.height;
+	w = demoCanvas.width;
+	drawGun();
+	drawTarget();
+	createjs.Ticker.on("tick", tick); // the main listener
+}
+function tick(event) {
+	stage.update(event);
+}
+	 
+function drawGun(){
+	
+}
+	
+function drawTarget(){
+	
+}
+	
+function operateGun(event){
+	
+}
+</script>
+<style type="text/css">
+#demoCanvas {
+	border: 1px solid gray;
+	padding: 2px;
+}
+</style>
+</head>
+
+<body onload="init();">
+<canvas id="demoCanvas" width="500" height="300"> alternate content </canvas>
+</body>
+</html>

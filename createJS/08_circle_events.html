@@ -1,0 +1,108 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title></title>
+<script type="text/javascript" src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+<script type="text/javascript">
+	
+// global variables
+var stage, w, h, circle, circleColor, score;
+	
+var clickCounter = false;
+	
+console.log(clickCounter);
+function init(){
+	stage = new createjs.Stage("demoCanvas");
+	h = demoCanvas.height;
+	w = demoCanvas.width;
+	console.log(h);
+	createjs.Ticker.addEventListener('tick', tickHandler);
+	drawCircle();
+	addScore();
+	// registering an eventhandler for window (if any key is pressed...)
+	window.onkeydown = onKey;
+	circle.addEventListener('click', clickCircle);
+}
+	
+function tickHandler(e){
+	circle.alpha = 1;
+	// implementing a basic hit test
+	// mapping the global mouse  coordinates to the local position of the circle:
+	var pt = circle.globalToLocal(stage.mouseX, stage.mouseY);
+	//console.log(pt.x, pt.y);
+	if (stage.mouseInBounds && circle.hitTest(pt.x, pt.y)) { circle.alpha = 0.1;};
+	stage.update();
+}
+	
+function drawCircle(){
+	circle = new createjs.Shape(); // instantiating the Shape class
+	circleColor = circle.graphics.beginFill('red').command; // command stores the related action
+	circle.graphics.drawCircle(0, 0, 50);
+	circle.x = w / 2;
+	circle.y = h / 2;
+	circle.alpha = 1;
+	stage.addChild(circle);
+}
+	
+function clickCircle(){
+	
+	if(!clickCounter){
+		circleColor.style = 'yellow';
+		clickCounter = true;
+	} else {
+		circleColor.style = 'red';
+		clickCounter = false;
+	}
+	
+	score.value++;
+	score.text = score.value;
+	console.log(score.value);
+}
+	
+function addScore(){
+	score = new createjs.Text("0", "20px Arial", "red");
+ 	score.x = w - 50;
+	score.y = h - h + 50;
+ 	score.textBaseline = "alphabetic";
+	score.value = 0;
+	stage.addChild(score);
+}
+	
+function onKey(e){
+	switch(e.keyCode){
+		case 37:
+			console.log('move left');
+			circle.x -= 10;
+			break;
+			
+		case 39:
+			console.log('move right');
+			circle.x += 10;
+			break;
+			
+		case 38:
+			console.log('move up');
+			circle.y -= 10;
+			break;
+			
+		case 40:
+			console.log('move down');
+			circle.y += 10;
+			break;
+	}
+}
+</script>
+
+<style type="text/css">
+#demoCanvas {
+	border: 1px solid gray;
+	padding: 2px;
+}
+</style>
+</head>
+
+<body onload="init();">
+<canvas id="demoCanvas" width="500" height="300"> alternate content </canvas>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Simple Quiz (arrays)</title>
+
+<script type="text/javascript" src="01_quiz.json"></script>
+
+<script type="text/javascript">
+	
+	var score = 0; // GLOBAL variable: Initial score is 0
+	
+	var mydata = JSON.parse(quiz);
+    console.log(mydata);
+	
+	// loop through the array of questions and call the function askQuestion taking array members as argument
+	for (var i=0; i<mydata.length; i++) {
+	askQuestion(mydata[i]);
+	}
+	
+	//function for asking question, passing on the array item as "question"
+	function askQuestion(question) {
+		//prompting the first array element and storing it into the variable "answer"
+  		var answer = prompt(question.question,'');
+  		//comparing array elements 0 + 1, question and answer
+		if (answer == question.answer) {
+		alert('Correct!');
+		score++;
+	} else {
+		alert('Sorry. The correct answer is ' + question.answer);
+	}
+}  
+</script>
+</head>
+
+<body>
+<p>
+ <!-- Feedback message after quiz is concluded -->
+  <script type="text/javascript">
+	var message = 'You got ' + score;
+	message += ' out of ' + mydata.length;
+	message += ' questions correct.';
+	document.write(message);
+	</script>
+  </p>
+
+</body>
+</html>

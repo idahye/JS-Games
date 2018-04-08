@@ -64,13 +64,16 @@ function Score(){
 
 function operateGun(event) {
        switch(event.keyCode){
-        case 39: 
-            if(gun.x < w - 15){gun.x += 10};
-            break;
-        case 37:
+       	 case 37:
+       	 	console.log('move left');
             if(gun.x > 5){gun.x -= 10};
             break;
+        case 39: 
+        	console.log('move right');
+            if(gun.x < w - 15){gun.x += 10};
+            break;
         case 32: 
+        	console.log('shoot');
        		bulletHit(); 
             break;
     }

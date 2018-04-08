@@ -4,40 +4,95 @@
 <meta charset="utf-8">
 <title></title>
 <script type="text/javascript" src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+ 
 <script type="text/javascript">
-	
-	// NOTE for Dreamweaver: Does NOT work in "Real time preview", choose temporary file instead!
-	
-var gun, target, w, h; // global variables
-	
+ 
+ // NOTE for Dreamweaver: Does NOT work in "Real time preview", choose temporary file instead!
+ 
+var gun, target, w, h, score, bullet, bulletHit; // global variables
+    
 function init(){
-	stage = new createjs.Stage("demoCanvas");
-	h = demoCanvas.height;
-	w = demoCanvas.width;
-	drawGun();
-	drawTarget();
-	createjs.Ticker.on("tick", tick); // the main listener
+ 	stage = new createjs.Stage("demoCanvas");
+ 	h = demoCanvas.height;
+ 	w = demoCanvas.width;
+ 	drawGun();
+ 	drawTarget();
+ 	Score();
+ 	createjs.Ticker.on("tick", tick);
+ 	window.onkeydown = operateGun;
 }
+ 
 function tick(event) {
-	stage.update(event);
+ 
+ if(score == 3){
+ alert('YOU WON!');
+ }
+
+ moveTarget();
+
+ stage.update(event);
+
 }
-	 
+  
 function drawGun(){
-	
+	gun = new createjs.Shape();
+	gun.graphics.beginFill("black").drawRect(0, 0, 10, 30);
+	gun.x = w /2 -15;
+	gun.y = h - 30;
+	stage.addChild(gun);  
 }
-	
+ 
 function drawTarget(){
-	
+ 	target = new createjs.Shape(); 
+	target.graphics.beginFill("black"); 
+	target.graphics.drawRect(0, 0, 50, 10); 
+	stage.addChild(target);
 }
-	
-function operateGun(event){
-	
+
+function moveTarget() {
+	createjs.Tween.get(target, {loop:true})
+		.to({x:450, y:0}, 2000);
+} 
+
+function Score(){
+ 	score = new createjs.Text ("0", "20px Raleway", "black"); 
+	score.x = w - 25; 
+	score.y = h - h + 20;
+	score.value = 0; 
+	stage.addChild(score);
+} 
+
+function operateGun(event) {
+       switch(event.keyCode){
+        case 39: 
+            if(gun.x < w - 15){gun.x += 10};
+            break;
+        case 37:
+            if(gun.x > 5){gun.x -= 10};
+            break;
+        case 32: 
+       		bulletHit(); 
+            break;
+    }
 }
+
+function bulletHit(event){
+// ?
+}
+
+function bullet(){
+	bullet = stage.addChild(new createjs.Shape());
+  	bullet.graphics.beginFill("black").drawCircle(0, 0, 2);
+  	//bullet.x = ;
+  	//bullet.y = ;
+  	stage.addChild(bullet);
+}
+
 </script>
 <style type="text/css">
 #demoCanvas {
-	border: 1px solid gray;
-	padding: 2px;
+ border: 1px solid gray;
+ padding: 2px;
 }
 </style>
 </head>

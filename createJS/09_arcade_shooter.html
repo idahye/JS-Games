@@ -3,99 +3,141 @@
 <head>
 <meta charset="utf-8">
 <title></title>
-<script type="text/javascript" src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
- 
-<script type="text/javascript">
- 
- // NOTE for Dreamweaver: Does NOT work in "Real time preview", choose temporary file instead!
- 
-var gun, target, w, h, score, bullet, bulletHit; // global variables
-    
+<script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+<script>
+	
+	// NOTE for Dreamweaver: Does NOT work in "Real time preview", choose temporary file instead!
+	
+var score, gun, gunCoord, torpCoord, target, tp, w, h; // global variables
+var fired = false; // keep track if torpedo is fired (true) or not (false, default)
+	
 function init(){
- 	stage = new createjs.Stage("demoCanvas");
- 	h = demoCanvas.height;
- 	w = demoCanvas.width;
- 	drawGun();
- 	drawTarget();
- 	Score();
- 	createjs.Ticker.on("tick", tick);
- 	window.onkeydown = operateGun;
+	stage = new createjs.Stage("demoCanvas");
+	h = demoCanvas.height;
+	w = demoCanvas.width;
+	addScore();
+	drawGun();
+	drawTarget();
+	moveTarget();
+	createjs.Ticker.on("tick", tick); // the main listener
+	window.onkeydown = operateGun; //register eventhandler for window
 }
- 
 function tick(event) {
- 
- if(score == 3){
- alert('YOU WON!');
- }
-
- moveTarget();
-
- stage.update(event);
-
+	//tracing the actual coordinates of the gun. Both x and y are "mapped" locally (x position: w / 2 - stagecenter, y position: h-20 - height of the gun) to the "global" coordinate space (the whole stage):
+	gunCoord = gun.localToGlobal(w / 2, h - 20); 
+	win();
+	stage.update(event);	
 }
-  
-function drawGun(){
-	gun = new createjs.Shape();
-	gun.graphics.beginFill("black").drawRect(0, 0, 10, 30);
-	gun.x = w /2 -15;
-	gun.y = h - 30;
-	stage.addChild(gun);  
-}
- 
-function drawTarget(){
- 	target = new createjs.Shape(); 
-	target.graphics.beginFill("black"); 
-	target.graphics.drawRect(0, 0, 50, 10); 
-	stage.addChild(target);
-}
-
-function moveTarget() {
-	createjs.Tween.get(target, {loop:true})
-		.to({x:450, y:0}, 2000);
-} 
-
-function Score(){
- 	score = new createjs.Text ("0", "20px Raleway", "black"); 
-	score.x = w - 25; 
-	score.y = h - h + 20;
-	score.value = 0; 
+	
+function addScore(){
+	score = new createjs.Text(0, "15px Arial", "#000000");
+	score.x = 480;
+	score.y = 20;
+	score.value = 0;
 	stage.addChild(score);
-} 
-
-function operateGun(event) {
-       switch(event.keyCode){
-       	 case 37:
-       	 	console.log('move left');
-            if(gun.x > 5){gun.x -= 10};
-            break;
-        case 39: 
-        	console.log('move right');
-            if(gun.x < w - 15){gun.x += 10};
-            break;
-        case 32: 
-        	console.log('shoot');
-       		bulletHit(); 
-            break;
-    }
 }
-
-function bulletHit(event){
-// ?
+	 
+function drawGun(){
+	gun = stage.addChild(new createjs.Shape());
+	// chained style:
+	gun.graphics.beginFill("red").drawRect(w / 2, h - 20, 10, 20);	
 }
-
-function bullet(){
-	bullet = stage.addChild(new createjs.Shape());
-  	bullet.graphics.beginFill("black").drawCircle(0, 0, 2);
-  	//bullet.x = ;
-  	//bullet.y = ;
-  	stage.addChild(bullet);
+	
+function drawTarget(){
+	target = stage.addChild(new createjs.Shape());
+	// chained style:
+	target.graphics.beginFill("blue").drawRect(25, 0, 35, 10);	
 }
-
+	
+function moveTarget(){
+	createjs.Tween.get (target, {loop:true})
+		.to({x:450},3500)
+		.to({x:-40},3500);
+}
+	
+function operateGun(e){
+	switch (e.keyCode){
+		case 32:
+		console.log('fired!');
+		if (fired === false) {torpedo();}; // launch torpedo if possible
+		break;
+			
+		case 37:
+		console.log('gun left');
+		gun.x -= 10;
+		break;
+			
+		case 39:
+		console.log('gun right');
+		gun.x += 10;
+		break;
+	}
+}
+	
+function torpedo(){
+	fired = true; // torpedo fired!
+	tp = stage.addChild(new createjs.Shape()); // creating a torpedo
+	tp.graphics.beginFill("green").drawRect(gunCoord.x+2.5, gunCoord.y-5, 5, 5); // start torpedo at current gun coordinates
+	torpCoord=gunCoord.x; // save the torpedo's x start coordinate "at gunpoint". This is necessary to create the localToLocal coordinate space in function tpControl(event)
+	createjs.Tween.get (tp, {loop:false}).to({y:-300},1500); // the actual shot!
+	createjs.Ticker.on("tick", tpControl); // callback to the torpedo's controls
+}
+	
+function tpControl(event){
+	// creating a localToLocal coordinate space from torpedo's starting point on x up to 300 pixels on y
+    var pt = tp.localToLocal(torpCoord,300,target);
+	// pt.x = torpedp's x position local to target
+	// pt.y = torpedo's y position local to target
+	if (target.hitTest(pt.x, pt.y)) {
+		console.log(pt.x + '/' + pt.y);
+		// note that pt.x can vary while pt.y is an almost fixed value (target is only moving on x!)
+		stage.removeChild(tp); // avoiding "double" hits
+		target.alpha = 0.1; 
+		score.value++; // registering a hit
+		score.text = score.value;
+		event.remove();
+	};
+	
+	if (pt.y<=10){ // removing the torpedo avoiding "double hits"!
+		fired = false; // get ready to launch again
+		target.alpha = 1; // reset target
+		stage.removeChild(tp);
+		event.remove();
+	}
+	stage.update(event);
+}
+	
+function win (){
+	if (score.value == 3)
+		{
+			stage.removeChild(target);
+			stage.removeChild(gun);
+			stage.removeChild(score);
+			score.value = 0;
+			// feedback
+			mesg = new createjs.Text(0, "35px Arial", "#000000");
+			stage.addChild(mesg);
+			//var b = mesg.getBounds();
+	        mesg.x = 20;
+			//mesg.y = h / 2;
+			mesg.text = 'You won, congrats!';
+			// create a rectangle shape the same size as the text, and assign it as the hitArea
+			// note that it is never added to the display list.
+			// https://github.com/CreateJS/EaselJS/blob/master/tutorials/Mouse%20Interaction/hitArea.html
+			var hit = new createjs.Shape();
+			hit.graphics.beginFill("#000").drawRect(0, 0, mesg.getMeasuredWidth(), mesg.getMeasuredHeight());
+			mesg.hitArea = hit;
+			// reload
+			mesg.on('click', reload);
+		}
+}
+function reload() {
+	init();
+}
 </script>
 <style type="text/css">
 #demoCanvas {
- border: 1px solid gray;
- padding: 2px;
+	border: 1px solid gray;
 }
 </style>
 </head>
